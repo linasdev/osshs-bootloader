@@ -1,0 +1,11 @@
+<library>
+	<options>
+		<option name="modm:build:scons:include_sconstruct">False</option>
+		<option name="modm:build:project.name">osshs-bootloader</option>
+		<option name="modm:build:build.path">../build/osshs-bootloader</option>
+	</options>
+
+  <modules>
+    <module>modm:platform:can</module>
+  </modules>
+</library>

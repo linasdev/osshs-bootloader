@@ -1,0 +1,8 @@
+build/
+
+osshs-bootloader/modm/
+
+*.dblite
+*.log
+
+.vscode
