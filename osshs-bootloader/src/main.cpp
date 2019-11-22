@@ -27,7 +27,17 @@
 int
 main()
 {
-	osshs::board::initialize();
+	// TODO: Load the application's offset value from preprocessor macro.
+	volatile uint32_t *application = (uint32_t *)(0x08000000 + 0x2000);
+
+	// TODO: Check for valid application.
+
+	// Use the application's vector table.
+	SCB->VTOR = (volatile uint32_t)(application); 
+	// Set the application's stack pointer.
+	__asm__ volatile ("MSR msp,%0" : :"r"(*application));
+	// Start the application.
+	(*(void(**)(void))((uint32_t)application + 4))();
 
 	return 0;
 }
