@@ -1,6 +1,6 @@
 build/
 
-osshs-bootloader/modm/
+modm/
 
 *.dblite
 *.log

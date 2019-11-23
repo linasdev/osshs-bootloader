@@ -12,16 +12,16 @@
 import os
 from os.path import join, abspath
 
-Import('project_name')
+project_name = "osshs-bootloader"
 
-build_path = "../build/" + project_name
+build_path = "./build/" + project_name
 profile = ARGUMENTS.get("profile", "release")
 
 generated_paths = [
     'modm'
 ]
 
-CacheDir("../build/cache")
+CacheDir("./build/cache")
 
 env = DefaultEnvironment(tools=[], ENV=os.environ)
 
@@ -31,11 +31,11 @@ env["CONFIG_PROFILE"] = profile
 
 env.SConscript(dirs=generated_paths, exports="env")
 
-env.Append(CPPPATH=".")
+env.Append(CPPPATH="./include")
 ignored = ["cmake-*", ".lbuild_cache", build_path] + generated_paths
 sources = []
 
-sources += env.FindSourceFiles('.', ignorePaths=ignored)
+sources += env.FindSourceFiles('./src', ignorePaths=ignored)
 
 env.Append(CCFLAGS = [
     "-fno-exceptions",

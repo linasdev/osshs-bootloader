@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include "./board.hpp"
+#include <board.hpp>
 
 int
 main()
