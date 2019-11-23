@@ -1,3 +1,3 @@
 [submodule "modm"]
-	path = modm
+	path = ext/modm
 	url = https://github.com/linasnikis/modm

@@ -1,7 +1,7 @@
 <library>
 	<repositories>
 		<repository>
-			<path>./modm/repo.lb</path>
+			<path>./ext/modm/repo.lb</path>
 		</repository>
 	</repositories>
 
