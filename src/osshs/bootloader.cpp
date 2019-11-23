@@ -35,6 +35,29 @@ namespace osshs
 	}
 
 	bool
+	Bootloader::shouldLoadApplication()
+	{
+		return (BKP->DR1 & 0x1) == 0;
+	}
+
+	void
+	Bootloader::setLoadApplication(bool loadApplication)
+	{
+		PWR->CR |= PWR_CR_DBP;
+
+		if (loadApplication)
+		{
+			BKP->DR1 &= ~0x1;
+		}
+		else
+		{
+			BKP->DR1 |= 0x1;
+		}
+
+		PWR->CR &= ~PWR_CR_DBP;
+	}
+
+	bool
 	Bootloader::checkApplication()
 	{
 		uint32_t stackPointer = *reinterpret_cast<uint32_t *>(OSSHS_BOOTLOADER_APPLICATION_ORIGIN);

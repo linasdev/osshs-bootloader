@@ -44,6 +44,22 @@ namespace osshs
 		initialize();
 
 		/**
+		 * @brief Check whether or not the bootloader should load the application.
+		 *
+		 * @return bool Whether or not the bootloader should load the application.
+		 */
+		static bool
+		shouldLoadApplication();
+
+		/**
+		 * @brief Set whether or not the bootloader should load the application on next boot.
+		 * 
+		 * @param loadApplication value to set.
+		 */
+		static void
+		setLoadApplication(bool loadApplication = true);
+
+		/**
 		 * @brief Check if the application has a valid stack pointer.
 		 *
 		 */

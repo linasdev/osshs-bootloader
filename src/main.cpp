@@ -30,13 +30,18 @@ main()
 {
 	osshs::Bootloader::initialize();
 
-	if(osshs::Bootloader::checkApplication())
+	if(osshs::Bootloader::shouldLoadApplication())
 	{
-		osshs::Bootloader::deinitialize();
-		osshs::Bootloader::loadApplication();
+		if(osshs::Bootloader::checkApplication())
+		{
+			osshs::Bootloader::deinitialize();
+			osshs::Bootloader::loadApplication();
+		}
+		
+		while(true);
 	}
 
-	while(true);
+	osshs::Bootloader::setLoadApplication();
 
 	return 0;
 }
