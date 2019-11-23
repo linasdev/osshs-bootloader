@@ -22,21 +22,48 @@
  * SOFTWARE.
  */
 
-#include <board.hpp>
-#include <osshs/bootloader.hpp>
+#ifndef OSSHS_BOOTLOADER_HPP
+#define OSSHS_BOOTLOADER_HPP
 
-int
-main()
+#define OSSHS_BOOTLOADER_APPLICATION_ORIGIN 0x08002000
+#define OSSHS_BOOTLOADER_APPLICATION_LENGTH 0x00020000
+
+#define OSSHS_BOOTLOADER_RAM_ORIGIN 0x20000000
+#define OSSHS_BOOTLOADER_RAM_LENGTH 0x00005000
+
+namespace osshs
 {
-	osshs::Bootloader::initialize();
-
-	if(osshs::Bootloader::checkApplication())
+	class Bootloader
 	{
-		osshs::Bootloader::deinitialize();
-		osshs::Bootloader::loadApplication();
-	}
+	public:
+		/**
+		 * @brief Initialize the bootloader.
+		 *
+		 */
+		static void
+		initialize();
 
-	while(true);
+		/**
+		 * @brief Check if the application has a valid stack pointer.
+		 *
+		 */
+		static bool
+		checkApplication();
 
-	return 0;
+		/**
+		 * @brief Load the application.
+		 *
+		 */
+		static void
+		loadApplication();
+
+		/**
+		 * @brief Deinitialize the bootloader.
+		 *
+		 */
+		static void
+		deinitialize();
+	};
 }
+
+#endif  // OSSHS_BOOTLOADER_HPP

@@ -22,21 +22,42 @@
  * SOFTWARE.
  */
 
-#include <board.hpp>
 #include <osshs/bootloader.hpp>
+#include <modm/platform.hpp>
 
-int
-main()
+namespace osshs
 {
-	osshs::Bootloader::initialize();
-
-	if(osshs::Bootloader::checkApplication())
+	void
+	Bootloader::initialize()
 	{
-		osshs::Bootloader::deinitialize();
-		osshs::Bootloader::loadApplication();
+		// Enable the power and backup interface clocks.
+		RCC->APB1ENR |= RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN;
 	}
 
-	while(true);
+	bool
+	Bootloader::checkApplication()
+	{
+		uint32_t stackPointer = *reinterpret_cast<uint32_t *>(OSSHS_BOOTLOADER_APPLICATION_ORIGIN);
+		return (stackPointer - OSSHS_BOOTLOADER_RAM_ORIGIN) < OSSHS_BOOTLOADER_RAM_LENGTH;
+	}
 
-	return 0;
+	void
+	Bootloader::loadApplication()
+	{
+		// Use the application's vector table.
+		SCB->VTOR = OSSHS_BOOTLOADER_APPLICATION_ORIGIN;
+
+		// Use the application's stack pointer as the Main Stack Pointer (MSP).
+  	__asm__ volatile ("MSR msp, %0" : : "r" (*reinterpret_cast<uint32_t *>(OSSHS_BOOTLOADER_APPLICATION_ORIGIN)) : );
+
+		// Call the application's entry point.
+		(*reinterpret_cast<void(**)()>(OSSHS_BOOTLOADER_APPLICATION_ORIGIN + 4))();
+	}
+
+	void
+	Bootloader::deinitialize()
+	{
+		// Disable the power and backup interface clocks.
+		RCC->APB1ENR &= ~(RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN);
+	}
 }
