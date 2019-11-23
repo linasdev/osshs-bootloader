@@ -38,7 +38,8 @@ sources = []
 sources += env.FindSourceFiles('.', ignorePaths=ignored)
 
 env.Append(CCFLAGS = [
-    "-fno-exceptions"
+    "-fno-exceptions",
+    "-DAPPLICATION_OFFSET=0x08002000"
 ])
 
 if profile == "debug":

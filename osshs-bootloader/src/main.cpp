@@ -27,8 +27,7 @@
 int
 main()
 {
-	// TODO: Load the application's offset value from preprocessor macro.
-	volatile uint32_t *application = (uint32_t *)(0x08000000 + 0x2000);
+	volatile uint32_t *application = (uint32_t *)(APPLICATION_OFFSET);
 
 	// TODO: Check for valid application.
 
