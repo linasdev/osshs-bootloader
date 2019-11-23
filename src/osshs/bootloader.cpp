@@ -71,7 +71,7 @@ namespace osshs
 		SCB->VTOR = OSSHS_BOOTLOADER_APPLICATION_ORIGIN;
 
 		// Use the application's stack pointer as the Main Stack Pointer (MSP).
-  	__asm__ volatile ("MSR msp, %0" : : "r" (*reinterpret_cast<uint32_t *>(OSSHS_BOOTLOADER_APPLICATION_ORIGIN)) : );
+		__asm__ volatile ("MSR msp, %0" : : "r" (*reinterpret_cast<uint32_t *>(OSSHS_BOOTLOADER_APPLICATION_ORIGIN)) : );
 
 		// Call the application's entry point.
 		(*reinterpret_cast<void(**)()>(OSSHS_BOOTLOADER_APPLICATION_ORIGIN + 4))();
