@@ -29,6 +29,12 @@
 
 using StatusIndicator = osshs::StatusLedController<modm::platform::Timer2, osshs::board::StatusLed, osshs::board::SystemClock>;
 
+MODM_ISR(TIM2)
+{
+	modm::platform::Timer2::acknowledgeInterruptFlags(modm::platform::GeneralPurposeTimer::InterruptFlag::Update);
+	StatusIndicator::update();
+}
+
 int
 main()
 {
@@ -40,22 +46,19 @@ main()
 		{
 			osshs::Bootloader::deinitialize();
 			osshs::Bootloader::loadApplication();
+			return 0;
 		}
 
 		osshs::board::initialize();
 		StatusIndicator::initialize(StatusIndicator::Status::APPLICATION_ERROR);
-		while(true);
+	}
+	else
+	{
+		osshs::board::initialize();
+		StatusIndicator::initialize();
 	}
 
-	osshs::board::initialize();
-	StatusIndicator::initialize();
 	while(true);
 
 	return 0;
-}
-
-MODM_ISR(TIM2)
-{
-	modm::platform::Timer2::acknowledgeInterruptFlags(modm::platform::GeneralPurposeTimer::InterruptFlag::Update);
-	StatusIndicator::update();
 }
