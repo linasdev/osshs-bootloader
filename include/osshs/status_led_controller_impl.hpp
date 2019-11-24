@@ -49,7 +49,7 @@ namespace osshs
 		TIMER::enable();
 
 		// Interrupt every 100ms
-		TIMER::template setPeriod< SYSTEM_CLOCK >(100000);
+		TIMER::template setPeriod<SYSTEM_CLOCK>(100000);
 		TIMER::setMode(TIMER::Mode::UpCounter);
 
 		TIMER::enableInterruptVector(true, 10);
