@@ -22,40 +22,64 @@
  * SOFTWARE.
  */
 
-#include <board.hpp>
-#include <osshs/bootloader.hpp>
-#include <osshs/status_led_controller.hpp>
-#include <modm/architecture/interface/interrupt.hpp>
+#ifndef OSSHS_STATUS_LED_CONTROLLER_HPP
+#define OSSHS_STATUS_LED_CONTROLLER_HPP
 
-using StatusIndicator = osshs::StatusLedController<modm::platform::Timer2, osshs::board::StatusLed, osshs::board::SystemClock>;
+#include <modm/platform.hpp>
 
-int
-main()
+namespace osshs
 {
-	osshs::Bootloader::initialize();
-
-	if(osshs::Bootloader::shouldLoadApplication())
+	template<typename TIMER, typename STATUS_LED, typename SYSTEM_CLOCK>
+	class StatusLedController
 	{
-		if(osshs::Bootloader::checkApplication())
+	public:
+		enum class Status : uint32_t
 		{
-			osshs::Bootloader::deinitialize();
-			osshs::Bootloader::loadApplication();
-		}
+			BOOTLOADER_ACTIVE,
+			APPLICATION_ERROR,
+			BOOTLOADER_ERROR
+		};
 
-		osshs::board::initialize();
-		StatusIndicator::initialize(StatusIndicator::Status::APPLICATION_ERROR);
-		while(true);
-	}
+		/**
+		 * @brief Enable the status led timer and set status to `Status::LOADING_APPLICATION`
+		 * 
+		 */
+		static void
+		initialize(Status status = Status::BOOTLOADER_ACTIVE);
 
-	osshs::board::initialize();
-	StatusIndicator::initialize();
-	while(true);
+		/**
+		 * @brief Enable the status led timer.
+		 * 
+		 */
+		static void
+		enable();
 
-	return 0;
+		/**
+		 * @brief Disable the status led timer.
+		 * 
+		 */
+		static void
+		disable();
+
+		/**
+		 * @brief Set current status.
+		 * 
+		 */
+		static void
+		setStatus(Status status);
+
+		/**
+		 * @brief Update status animations. Should be called from the timer interrupt setup by `enable()`.
+		 * 
+		 */
+		static void
+		update();
+	private:
+		static Status status;
+		static uint16_t counter;
+  };
 }
 
-MODM_ISR(TIM2)
-{
-	modm::platform::Timer2::acknowledgeInterruptFlags(modm::platform::GeneralPurposeTimer::InterruptFlag::Update);
-	StatusIndicator::update();
-}
+#include <osshs/status_led_controller_impl.hpp>
+
+#endif  // OSSHS_STATUS_LED_CONTROLLER_HPP

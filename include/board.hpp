@@ -33,6 +33,8 @@ namespace osshs
 	{
 		using namespace modm::literals;
 
+		using StatusLed = modm::platform::GpioInverted<modm::platform::GpioOutputC13>;
+
 		struct SystemClock
 		{
 			static constexpr uint32_t Frequency = 72_MHz;
@@ -78,6 +80,8 @@ namespace osshs
 			modm::platform::Rcc::updateCoreFrequency<SystemClock::Frequency>();
 
 			modm::platform::SysTickTimer::initialize<SystemClock>();
+
+			StatusLed::setOutput(modm::Gpio::Low);
 		}
 	}
 }
