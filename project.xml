@@ -1,11 +1,24 @@
 <library>
+	<repositories>
+		<repository>
+			<path>./ext/modm/repo.lb</path>
+		</repository>
+	</repositories>
+
 	<options>
-		<option name="modm:build:scons:include_sconstruct">False</option>
-		<option name="modm:build:project.name">osshs-bootloader</option>
+		<option name="modm:target">stm32f103cbt6</option>
+
 		<option name="modm:build:build.path">./build/osshs-bootloader</option>
+		<option name="modm:build:openocd.cfg">./openocd.cfg</option>
+		<option name="modm:build:project.name">osshs-bootloader</option>
+		<option name="modm:build:scons:cache_dir">$cache</option>
+		<option name="modm:build:scons:include_sconstruct">False</option>
 	</options>
 
-  <modules>
+	<modules>
+		<module>modm:build:scons</module>
+		<module>modm:debug</module>
+		<module>modm:platform:core</module>
     <module>modm:platform:can</module>
-  </modules>
+	</modules>
 </library>
