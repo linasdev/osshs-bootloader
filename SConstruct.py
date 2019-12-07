@@ -37,9 +37,12 @@ sources = []
 
 sources += env.FindSourceFiles('./src', ignorePaths=ignored)
 
+env.Append(CPPPATH = [
+    "./ext/magic_enum/include/"
+])
+
 env.Append(CCFLAGS = [
-    "-fno-exceptions",
-    "-DAPPLICATION_OFFSET=0x08002000"
+    "-fno-exceptions"
 ])
 
 if profile == "debug":
