@@ -26,6 +26,9 @@
 	#error "Don't include this file directly, use 'status_led_controller.hpp' instead!"
 #endif
 
+#include <osshs/log/logger.hpp>
+#include <magic_enum.hpp>
+
 namespace osshs
 {
 	template<typename TIMER, typename STATUS_LED, typename SYSTEM_CLOCK>
@@ -38,6 +41,8 @@ namespace osshs
 	void
 	StatusLedController<TIMER, STATUS_LED, SYSTEM_CLOCK>::initialize(Status status)
 	{
+		OSSHS_LOG_INFO("Initializing status led controller.");
+
 		setStatus(status);
 		enable();
 	}
@@ -46,6 +51,8 @@ namespace osshs
 	void
 	StatusLedController<TIMER, STATUS_LED, SYSTEM_CLOCK>::enable()
 	{
+		OSSHS_LOG_INFO("Enabling status led controller.");
+		
 		TIMER::enable();
 
 		// Interrupt every 100ms
@@ -63,6 +70,8 @@ namespace osshs
 	void
 	StatusLedController<TIMER, STATUS_LED, SYSTEM_CLOCK>::disable()
 	{
+		OSSHS_LOG_INFO("Disabling status led controller.");
+
 		TIMER::pause();
 
 		TIMER::disableInterrupt(TIMER::Interrupt::Update);
@@ -75,6 +84,8 @@ namespace osshs
 	void
 	StatusLedController<TIMER, STATUS_LED, SYSTEM_CLOCK>::setStatus(Status status)
 	{
+		OSSHS_LOG_INFO("Changing status(status = %s).", std::string(magic_enum::enum_name(status)).c_str());
+
 		StatusLedController::status = status;
 	}
 
