@@ -74,7 +74,7 @@ namespace osshs
 	void
 	StatusLedController<TIMER, STATUS_LED, SYSTEM_CLOCK>::setStatus(Status status)
 	{
-		OSSHS_LOG_INFO("Changing status(status = %s).", std::string(magic_enum::enum_name(status)).c_str());
+		OSSHS_LOG_INFO("Changing status(status = `%s`).", std::string(magic_enum::enum_name(status)).c_str());
 
 		StatusLedController::status = status;
 	}
