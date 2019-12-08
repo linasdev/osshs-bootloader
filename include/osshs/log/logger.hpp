@@ -39,7 +39,7 @@
 	#define OSSHS_LOG_INFO(format, args...)    osshs::log::Logger::log(osshs::log::Level::INFO   , __FILENAME__, __LINE__, format, ##args);
 	#define OSSHS_LOG_DEBUG(format, args...)   osshs::log::Logger::log(osshs::log::Level::DEBUG  , __FILENAME__, __LINE__, format, ##args);
 
-	#define OSSHS_LOG_CLEAN() osshs::log::Logger::clean();
+	#define OSSHS_LOG_FLUSH() osshs::log::Logger::flush();
 	#define OSSHS_LOG_SET_LEVEL(level) osshs::log::Logger::setLevel(level);
 
 	namespace osshs
@@ -82,7 +82,7 @@
 					log(Level level, const char *filename, uint32_t line, const char *format, ARGS... args);
 
 					static void
-					clean();
+					flush();
 				private:
 					static Level level;
 			};
@@ -98,7 +98,7 @@
 	#define OSSHS_LOG_INFO(format, args...)
 	#define OSSHS_LOG_DEBUG(format, args...)
 
-	#define OSSHS_LOG_CLEAN()
+	#define OSSHS_LOG_FLUSH()
 	#define OSSHS_LOG_SET_LEVEL(level)
 #endif  // DISABLE_LOGGING
 

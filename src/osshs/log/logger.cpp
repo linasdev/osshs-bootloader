@@ -36,11 +36,11 @@
 			{
 				Logger::level = level;
 			}
-
+			
 			void
-			Logger::clean()
+			Logger::flush()
 			{
-				logger << "\033[2J\033[H";
+				logger.flush();
 			}
 		}
 	}
