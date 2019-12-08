@@ -27,64 +27,79 @@
 
 #include <modm/debug/logger.hpp>
 
-#define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+#ifndef DISABLE_LOGGING
+	#define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
-#define OSSHS_ENABLE_LOGGER(device, behavior) \
-	modm::IODeviceWrapper<device, behavior> loggerDevice; \
-	modm::log::Logger osshs::log::logger(loggerDevice);
+	#define OSSHS_ENABLE_LOGGER(device, behavior) \
+		modm::IODeviceWrapper<device, behavior> loggerDevice; \
+		modm::log::Logger osshs::log::logger(loggerDevice);
 
-#define OSSHS_LOG_ERROR(format, args...)   osshs::log::Logger::log(osshs::log::Level::ERROR  , __FILENAME__, __LINE__, format, ##args);
-#define OSSHS_LOG_WARNING(format, args...) osshs::log::Logger::log(osshs::log::Level::WARNING, __FILENAME__, __LINE__, format, ##args);
-#define OSSHS_LOG_INFO(format, args...)    osshs::log::Logger::log(osshs::log::Level::INFO   , __FILENAME__, __LINE__, format, ##args);
-#define OSSHS_LOG_DEBUG(format, args...)   osshs::log::Logger::log(osshs::log::Level::DEBUG  , __FILENAME__, __LINE__, format, ##args);
+	#define OSSHS_LOG_ERROR(format, args...)   osshs::log::Logger::log(osshs::log::Level::ERROR  , __FILENAME__, __LINE__, format, ##args);
+	#define OSSHS_LOG_WARNING(format, args...) osshs::log::Logger::log(osshs::log::Level::WARNING, __FILENAME__, __LINE__, format, ##args);
+	#define OSSHS_LOG_INFO(format, args...)    osshs::log::Logger::log(osshs::log::Level::INFO   , __FILENAME__, __LINE__, format, ##args);
+	#define OSSHS_LOG_DEBUG(format, args...)   osshs::log::Logger::log(osshs::log::Level::DEBUG  , __FILENAME__, __LINE__, format, ##args);
 
-namespace osshs
-{
-	namespace log
+	#define OSSHS_LOG_CLEAN() osshs::log::Logger::clean();
+	#define OSSHS_LOG_SET_LEVEL(level) osshs::log::Logger::setLevel(level);
+
+	namespace osshs
 	{
-	  extern modm::log::Logger logger;
-
-		enum class Level : uint8_t
+		namespace log
 		{
-			DISABLED,
-			ERROR,
-			WARNING,
-			INFO,
-			DEBUG
-		};
+			extern modm::log::Logger logger;
 
-		class Logger
-		{
-			public:
-				/**
-				 * @brief Set current logger level.
-				 * 
-				 * @param level severity level. One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
-				 */
-				static void
-				setLevel(Level level);
+			enum class Level : uint8_t
+			{
+				DISABLED,
+				ERROR,
+				WARNING,
+				INFO,
+				DEBUG
+			};
 
-				/**
-				 * @brief Write a log message.
-				 * 
-				 * @param level severity level. One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
-				 * @param file file from which the message was logged. Usually __FILENAME__.
-				 * @param line line from which the message was logged. Usually __LINE__.
-				 * @param format format for the log message.
-				 * @param args arguments that are required for the specified format.
-				 */
-				template<typename... ARGS>
-				static void
-				log(Level level, const char *filename, uint32_t line, const char *format, ARGS... args);
+			class Logger
+			{
+				public:
+					/**
+					 * @brief Set current logger level.
+					 * 
+					 * @param level severity level. One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
+					 */
+					static void
+					setLevel(Level level);
 
-				static void
-				clean();
-			private:
-				static Level level;
-		};
+					/**
+					 * @brief Write a log message.
+					 * 
+					 * @param level severity level. One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
+					 * @param file file from which the message was logged. Usually __FILENAME__.
+					 * @param line line from which the message was logged. Usually __LINE__.
+					 * @param format format for the log message.
+					 * @param args arguments that are required for the specified format.
+					 */
+					template<typename... ARGS>
+					static void
+					log(Level level, const char *filename, uint32_t line, const char *format, ARGS... args);
+
+					static void
+					clean();
+				private:
+					static Level level;
+			};
+		}
 	}
-}
 
-#include <osshs/log/logger_impl.hpp>
+	#include <osshs/log/logger_impl.hpp>
+#else  // DISABLE_LOGGING
+	#define OSSHS_ENABLE_LOGGER(device, behavior)
 
-#endif
+	#define OSSHS_LOG_ERROR(format, args...)
+	#define OSSHS_LOG_WARNING(format, args...)
+	#define OSSHS_LOG_INFO(format, args...)
+	#define OSSHS_LOG_DEBUG(format, args...)
+
+	#define OSSHS_LOG_CLEAN()
+	#define OSSHS_LOG_SET_LEVEL(level)
+#endif  // DISABLE_LOGGING
+
+#endif  // OSSHS_LOGGER_HPP

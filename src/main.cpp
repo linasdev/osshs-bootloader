@@ -41,8 +41,8 @@ main()
 	modm::platform::Usart1::connect< modm::platform::GpioA9::Tx >();
 	modm::platform::Usart1::initialize< osshs::board::SystemClock, 115200_Bd >();
 
-	osshs::log::Logger::clean();
-	osshs::log::Logger::setLevel(osshs::log::Level::DEBUG);
+	OSSHS_LOG_CLEAN();
+	OSSHS_LOG_SET_LEVEL(osshs::log::Level::DEBUG);
 
 	osshs::Bootloader::initialize();
 	StatusIndicator::initialize();

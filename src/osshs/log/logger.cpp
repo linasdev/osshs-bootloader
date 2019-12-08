@@ -24,22 +24,24 @@
 
 #include <osshs/log/logger.hpp>
 
-namespace osshs
-{
-	namespace log
+#ifndef DISABLE_LOGGING
+	namespace osshs
 	{
-		Level Logger::level = Level::DEBUG;
-
-		void
-		Logger::setLevel(Level level)
+		namespace log
 		{
-			Logger::level = level;
-		}
+			Level Logger::level = Level::DEBUG;
 
-		void
-		Logger::clean()
-		{
-			logger << "\033[2J\033[H";
+			void
+			Logger::setLevel(Level level)
+			{
+				Logger::level = level;
+			}
+
+			void
+			Logger::clean()
+			{
+				logger << "\033[2J\033[H";
+			}
 		}
 	}
-}
+#endif  // DISABLE_LOGGING

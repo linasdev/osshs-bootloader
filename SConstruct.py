@@ -15,7 +15,7 @@ from os.path import join, abspath
 project_name = "osshs-bootloader"
 
 build_path = "./build/" + project_name
-profile = ARGUMENTS.get("profile", "release")
+profile = ARGUMENTS.get("profile", "debug")
 
 generated_paths = [
     'modm'
@@ -47,7 +47,12 @@ env.Append(CCFLAGS = [
 
 if profile == "debug":
     env.Append(CCFLAGS = [
-        "-O0",
+        "-O0"
+    ])
+
+if profile == "release":
+    env.Append(CCFLAGS = [
+        "-DDISABLE_LOGGING"
     ])
 
 env.BuildTarget(sources)
