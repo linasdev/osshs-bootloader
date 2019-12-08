@@ -32,15 +32,14 @@ namespace osshs
 	namespace board
 	{
 		using namespace modm::literals;
-
 		using StatusLed = modm::platform::GpioInverted<modm::platform::GpioOutputC13>;
 
 		struct SystemClock
 		{
-			static constexpr uint32_t Frequency = 72_MHz;
-			static constexpr uint32_t Ahb = Frequency;
-			static constexpr uint32_t Apb1 = Frequency / 2;
-			static constexpr uint32_t Apb2 = Frequency;
+			static constexpr uint32_t Frequency = 8_MHz;
+			static constexpr uint32_t Ahb  = Frequency / 1;
+			static constexpr uint32_t Apb1 = Frequency / 1;
+			static constexpr uint32_t Apb2 = Frequency / 1;
 
 			static constexpr uint32_t Adc  = Apb2;
 
@@ -59,7 +58,7 @@ namespace osshs
 			static constexpr uint32_t I2c1   = Apb1;
 			static constexpr uint32_t I2c2   = Apb1;
 
-			static constexpr uint32_t Apb1Timer = Apb1 * 2;
+			static constexpr uint32_t Apb1Timer = Apb1 * 1;
 			static constexpr uint32_t Apb2Timer = Apb2 * 1;
 			static constexpr uint32_t Timer1  = Apb2Timer;
 			static constexpr uint32_t Timer2  = Apb1Timer;
@@ -67,21 +66,29 @@ namespace osshs
 			static constexpr uint32_t Timer4  = Apb1Timer;
 		};
 
-		inline void
+		void
 		initialize()
 		{
-			modm::platform::Rcc::enableExternalCrystal();
-			modm::platform::Rcc::enablePll(modm::platform::Rcc::PllSource::ExternalCrystal, 9);
-			modm::platform::Rcc::setFlashLatency<SystemClock::Frequency>();
-			modm::platform::Rcc::enableSystemClock(modm::platform::Rcc::SystemClockSource::Pll);
+			modm::platform::Rcc::enableInternalClock();
+			modm::platform::Rcc::enableSystemClock(modm::platform::Rcc::SystemClockSource::Hsi);
 			modm::platform::Rcc::setAhbPrescaler(modm::platform::Rcc::AhbPrescaler::Div1);
-			modm::platform::Rcc::setApb1Prescaler(modm::platform::Rcc::Apb1Prescaler::Div2);
+			modm::platform::Rcc::setApb1Prescaler(modm::platform::Rcc::Apb1Prescaler::Div1);
 			modm::platform::Rcc::setApb2Prescaler(modm::platform::Rcc::Apb2Prescaler::Div1);
 			modm::platform::Rcc::updateCoreFrequency<SystemClock::Frequency>();
+
+			modm::platform::Usart1::connect<modm::platform::GpioA9::Tx>();
+			modm::platform::Usart1::initialize<osshs::board::SystemClock, 115200_Bd>();
 
 			modm::platform::SysTickTimer::initialize<SystemClock>();
 
 			StatusLed::setOutput(modm::Gpio::Low);
+		}
+
+		void
+		deinitialize()
+		{
+			modm::platform::UsartHal1::disable();
+			modm::platform::SysTickTimer::disable();
 		}
 	}
 }

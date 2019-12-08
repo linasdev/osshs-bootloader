@@ -38,9 +38,6 @@ main()
 {
 	osshs::board::initialize();
 
-	modm::platform::Usart1::connect< modm::platform::GpioA9::Tx >();
-	modm::platform::Usart1::initialize< osshs::board::SystemClock, 115200_Bd >();
-
 	OSSHS_LOG_SET_LEVEL(osshs::log::Level::DEBUG);
 
 	osshs::Bootloader::initialize();
@@ -54,11 +51,12 @@ main()
 
 		if(osshs::Bootloader::checkApplication())
 		{
-			osshs::Bootloader::deinitialize();
 			StatusIndicator::disable();
+			osshs::Bootloader::deinitialize();
 
 			OSSHS_LOG_FLUSH();
 
+			osshs::board::deinitialize();
 			osshs::Bootloader::loadApplication();
 			return 0;
 		}
