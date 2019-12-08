@@ -39,16 +39,6 @@ namespace osshs
 
 	template<typename TIMER, typename STATUS_LED, typename SYSTEM_CLOCK>
 	void
-	StatusLedController<TIMER, STATUS_LED, SYSTEM_CLOCK>::initialize(Status status)
-	{
-		OSSHS_LOG_INFO("Initializing status led controller.");
-
-		setStatus(status);
-		enable();
-	}
-
-	template<typename TIMER, typename STATUS_LED, typename SYSTEM_CLOCK>
-	void
 	StatusLedController<TIMER, STATUS_LED, SYSTEM_CLOCK>::enable()
 	{
 		OSSHS_LOG_INFO("Enabling status led controller.");

@@ -44,7 +44,9 @@ main()
 	OSSHS_LOG_SET_LEVEL(osshs::log::Level::DEBUG);
 
 	osshs::Bootloader::initialize();
-	StatusIndicator::initialize();
+	
+	StatusIndicator::enable();
+	StatusIndicator::setStatus(StatusIndicator::Status::BOOTLOADER_ACTIVE);
 
 	if(osshs::Bootloader::shouldLoadApplication())
 	{
@@ -53,6 +55,7 @@ main()
 		if(osshs::Bootloader::checkApplication())
 		{
 			osshs::Bootloader::deinitialize();
+			StatusIndicator::disable();
 
 			OSSHS_LOG_FLUSH();
 

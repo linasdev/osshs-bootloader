@@ -41,13 +41,6 @@ namespace osshs
 		};
 
 		/**
-		 * @brief Enable the status led timer and set status to `Status::LOADING_APPLICATION`
-		 * 
-		 */
-		static void
-		initialize(Status status = Status::BOOTLOADER_ACTIVE);
-
-		/**
 		 * @brief Enable the status led timer.
 		 * 
 		 */
