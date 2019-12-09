@@ -64,7 +64,8 @@ namespace osshs
 		checkApplication();
 
 		/**
-		 * @brief Load the application. deinitialize() should be called before loading the application.
+		 * @brief Load the application.
+		 * @note deinitialize() should be called before loading the application.
 		 */
 		static void
 		loadApplication();

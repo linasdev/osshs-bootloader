@@ -68,7 +68,8 @@
 					setLevel(Level level);
 
 					/**
-					 * @brief Write a log message. Should not be called directly, instead use the predefined macros.
+					 * @brief Write a log message.
+					 * @note Should not be called directly, instead use the predefined macros.
 					 * @param level One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
 					 * @param file File from which the message was logged. Usually __FILENAME__.
 					 * @param line Line from which the message was logged. Usually __LINE__.

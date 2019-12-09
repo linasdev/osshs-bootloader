@@ -37,11 +37,11 @@ namespace osshs
 		bool
 		Flash::unlock()
 		{
-			OSSHS_LOG_INFO("Unlocking flash.");
-
+			// Unlock flash
 			FLASH->KEYR = KEY1;
 			FLASH->KEYR = KEY2;
 
+			// Verify that flash was unlocked
 			if (isLocked())
 			{
 				OSSHS_LOG_ERROR("Unlocking flash failed.");
@@ -55,34 +55,59 @@ namespace osshs
 		void
 		Flash::lock()
 		{
-			OSSHS_LOG_INFO("Locking flash.");
-
+			// Lock flash
 			FLASH->CR |= FLASH_CR_LOCK;
+
+			OSSHS_LOG_INFO("Locking flash succeeded.");
 		}
 
 		uint16_t
 		Flash::readHalfWord(uint32_t address)
 		{
+			if (address & 0b1)
+			{
+				OSSHS_LOG_ERROR("Reading half word from flash failed. Address not half word aligned(address = `0x%08x`).", address);
+				return false;
+			}
+
+			// Read from flash
 			uint16_t value = *reinterpret_cast<uint16_t *>(address);
 
-			OSSHS_LOG_DEBUG("Reading half word from flash(address = `0x%08x`, value = `0x%04x`).", address, value);
-
+			OSSHS_LOG_DEBUG("Reading half word from flash succeeded(address = `0x%08x`, value = `0x%04x`).", address, value);
 			return value;
 		}
 
 		bool
 		Flash::writeHalfWord(uint32_t address, uint16_t value)
 		{
-			OSSHS_LOG_DEBUG("Writing half word to flash(address = `0x%08x`, value = `0x%04x`).", address, value);
+			if (address & 0b1)
+			{
+				OSSHS_LOG_ERROR("Writing half word to flash failed. Address not half word aligned(address = `0x%08x`, value = `0x%04x`).",
+					address, value);
+				return false;
+			}
 
-			FLASH->CR |= FLASH_CR_PG;
-
-			*reinterpret_cast<volatile uint16_t *>(address) = value;
-
+			// Wait until flash is not busy
 			while(FLASH->SR & FLASH_SR_BSY);
 
-			if (readHalfWord(address) == value)
+			// Enable flash programming
+			FLASH->CR |= FLASH_CR_PG;
+
+			// Write to flash
+			*reinterpret_cast<uint16_t *>(address) = value;
+
+			// Wait until flash is not busy
+			while(FLASH->SR & FLASH_SR_BSY);
+
+			// Disable flash programming
+			FLASH->CR &= ~FLASH_CR_PG;
+
+			// Verify written value
+			if (*reinterpret_cast<uint16_t *>(address) == value)
+			{
+				OSSHS_LOG_DEBUG("Writing half word to flash succeeded(address = `0x%08x`, value = `0x%04x`).", address, value);
 				return true;
+			}
 
 			OSSHS_LOG_ERROR("Writing half word to flash failed(address = `0x%08x`, value = `0x%04x`).", address, value);
 			return false;

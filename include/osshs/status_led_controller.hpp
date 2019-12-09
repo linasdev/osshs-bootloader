@@ -60,7 +60,8 @@ namespace osshs
 		setStatus(Status status);
 
 		/**
-		 * @brief Update status animations. Should be called from the timer interrupt setup by enable().
+		 * @brief Update status animations.
+		 * @note Should be called from the timer interrupt setup by enable().
 		 */
 		static void
 		update();

@@ -37,21 +37,24 @@ namespace osshs
 	{
 	public:
 		/**
-		 * @brief Check if FLASH_CR register is locked. Writing to flash is only possible if it is unlocked.
+		 * @brief Check if flash is locked.
+		 * @note Writing to flash is only possible if it is unlocked.
 		 * @return Whether or not the FLASH_CR register is locked.
 		 */
 		static bool
 		isLocked();
 		
 		/**
-		 * @brief Unlock FLASH_CR register. Writing to flash is only possible after unlocking.
+		 * @brief Unlock flash.
+		 * @note Writing to flash is only possible if it is unlocked.
 		 * @return Whether or not unlocking succeeded.
 		 */
 		static bool
 		unlock();
 
 		/**
-		 * @brief Lock FLASH_CR register. Writing to flash will not be possible after locking.
+		 * @brief Lock flash.
+		 * @note Writing to flash is only possible if it is unlocked.
 		 */
 		static void
 		lock();
@@ -65,7 +68,8 @@ namespace osshs
 		readHalfWord(uint32_t address);
 
 		/**
-		 * @brief Write a balue to flash.
+		 * @brief Write a value to flash.
+		 * @note The page in which the address resides must be erased before writing to it.
 		 * @param address Address where the value should be written to.
 		 * @param value Value to write.
 		 * @return Whether or not writing succeeded.
