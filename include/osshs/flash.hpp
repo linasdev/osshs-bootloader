@@ -27,11 +27,11 @@
 
 #include <cstdint>
 
-#define KEY_RDPRT 0x00A5
-#define KEY1 			0x45670123
-#define KEY2 			0xCDEF89AB
+#define OSSHS_FLASH_KEY_RDPRT 0x00A5
+#define OSSHS_FLASH_KEY1 			0x45670123
+#define OSSHS_FLASH_KEY2 			0xCDEF89AB
 
-#define PAGE_SIZE 0x0400
+#define OSSHS_FLASH_PAGE_SIZE 0x0400
 
 namespace osshs
 {
