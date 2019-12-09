@@ -31,6 +31,8 @@
 #define KEY1 			0x45670123
 #define KEY2 			0xCDEF89AB
 
+#define PAGE_SIZE 0x0400
+
 namespace osshs
 {
 	class Flash
@@ -76,6 +78,15 @@ namespace osshs
 		 */
 		static bool
 		writeHalfWord(uint32_t address, uint16_t value);
+
+		/**
+		 * @brief Erase a page.
+		 * @note Required for writing to any address within the page.
+		 * @param address Any address withing the page that should be erased.
+		 * @return Whether or not erasing succeeded.
+		 */
+		static bool
+		erasePage(uint32_t address);
 	};
 }
 

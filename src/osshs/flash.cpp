@@ -112,4 +112,46 @@ namespace osshs
 			OSSHS_LOG_ERROR("Writing half word to flash failed(address = `0x%08x`, value = `0x%04x`).", address, value);
 			return false;
 		}
+
+		bool
+		Flash::erasePage(uint32_t address)
+		{
+			if (address & 0b1)
+			{
+				OSSHS_LOG_ERROR("Erasing flash page failed. Address not half word aligned(address = `0x%08x`, page = `%d`).",
+					address, address / PAGE_SIZE);
+				return false;
+			}
+
+			uint32_t pageOrigin = (address / PAGE_SIZE) * PAGE_SIZE;
+
+			// Wait until flash is not busy
+			while(FLASH->SR & FLASH_SR_BSY);
+
+			// Enable page erasing
+			FLASH->CR |= FLASH_CR_PER;
+
+			// Specify which address to erase
+			FLASH->AR = address;
+
+			// Start erasing
+			FLASH->CR |= FLASH_CR_STRT;
+
+			// Wait until flash is not busy
+			while(FLASH->SR & FLASH_SR_BSY);
+
+			// Disable page erasing
+			FLASH->CR &= ~FLASH_CR_PER;
+
+			// Verify that the page was erased
+			for (uint32_t i = pageOrigin; i < pageOrigin + PAGE_SIZE; i += 2)
+				if (*reinterpret_cast<uint16_t *>(i) != 0xffff)
+				{
+					OSSHS_LOG_ERROR("Erasing flash page failed(address = `0x%08x`, page = `%d`).", address, address / PAGE_SIZE);
+					return false;
+				}
+
+			OSSHS_LOG_DEBUG("Erasing flash page succeeded(address = `0x%08x`, page = `%d`).", address, address / PAGE_SIZE);
+			return true;
+		}
 }
