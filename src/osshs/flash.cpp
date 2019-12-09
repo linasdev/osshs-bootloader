@@ -119,7 +119,7 @@ namespace osshs
 			if (address & 0b1)
 			{
 				OSSHS_LOG_ERROR("Erasing flash page failed. Address not half word aligned(address = `0x%08x`, page = `%d`).",
-					address, address / OSSHS_FLASH_PAGE_SIZE);
+					address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
 				return false;
 			}
 
@@ -147,11 +147,13 @@ namespace osshs
 			for (uint32_t i = pageOrigin; i < pageOrigin + OSSHS_FLASH_PAGE_SIZE; i += 2)
 				if (*reinterpret_cast<uint16_t *>(i) != 0xffff)
 				{
-					OSSHS_LOG_ERROR("Erasing flash page failed(address = `0x%08x`, page = `%d`).", address, address / OSSHS_FLASH_PAGE_SIZE);
+					OSSHS_LOG_ERROR("Erasing flash page failed(address = `0x%08x`, page = `%d`).",
+						address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
 					return false;
 				}
 
-			OSSHS_LOG_DEBUG("Erasing flash page succeeded(address = `0x%08x`, page = `%d`).", address, address / OSSHS_FLASH_PAGE_SIZE);
+			OSSHS_LOG_DEBUG("Erasing flash page succeeded(address = `0x%08x`, page = `%d`).",
+				address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
 			return true;
 		}
 }
