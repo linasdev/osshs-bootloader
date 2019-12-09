@@ -65,7 +65,7 @@ namespace osshs
 		{
 			uint16_t value = *reinterpret_cast<uint16_t *>(address);
 
-			OSSHS_LOG_DEBUG("Reading half word from flash(address = `%x`, value = `%x`).", address, value);
+			OSSHS_LOG_DEBUG("Reading half word from flash(address = `0x%08x`, value = `0x%04x`).", address, value);
 
 			return value;
 		}
@@ -73,7 +73,7 @@ namespace osshs
 		bool
 		Flash::writeHalfWord(uint32_t address, uint16_t value)
 		{
-			OSSHS_LOG_DEBUG("Writing half word to flash(address = `%x`, value = `%x`).", address, value);
+			OSSHS_LOG_DEBUG("Writing half word to flash(address = `0x%08x`, value = `0x%04x`).", address, value);
 
 			FLASH->CR |= FLASH_CR_PG;
 
@@ -84,7 +84,7 @@ namespace osshs
 			if (readHalfWord(address) == value)
 				return true;
 
-			OSSHS_LOG_ERROR("Writing half word to flash failed(address = `%x`, value = `%x`).", address, value);
+			OSSHS_LOG_ERROR("Writing half word to flash failed(address = `0x%08x`, value = `0x%04x`).", address, value);
 			return false;
 		}
 }
