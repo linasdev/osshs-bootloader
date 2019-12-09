@@ -62,25 +62,26 @@
 				public:
 					/**
 					 * @brief Set current logger level.
-					 * 
-					 * @param level severity level. One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
+					 * @param level One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
 					 */
 					static void
 					setLevel(Level level);
 
 					/**
-					 * @brief Write a log message.
-					 * 
-					 * @param level severity level. One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
-					 * @param file file from which the message was logged. Usually __FILENAME__.
-					 * @param line line from which the message was logged. Usually __LINE__.
-					 * @param format format for the log message.
-					 * @param args arguments that are required for the specified format.
+					 * @brief Write a log message. Should not be called directly, instead use the predefined macros.
+					 * @param level One of: osshs::log::DEBUG, osshs::log::INFO, osshs::log::WARNING, osshs::log::ERROR or osshs::log::DISABLED.
+					 * @param file File from which the message was logged. Usually __FILENAME__.
+					 * @param line Line from which the message was logged. Usually __LINE__.
+					 * @param format Log message format.
+					 * @param args Log message format arguments.
 					 */
 					template<typename... ARGS>
 					static void
 					log(Level level, const char *filename, uint32_t line, const char *format, ARGS... args);
 
+					/**
+					 * @brief Flush the underlying stream.
+					 */
 					static void
 					flush();
 				private:

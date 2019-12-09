@@ -42,28 +42,25 @@ namespace osshs
 
 		/**
 		 * @brief Enable the status led timer.
-		 * 
 		 */
 		static void
 		enable();
 
 		/**
 		 * @brief Disable the status led timer.
-		 * 
 		 */
 		static void
 		disable();
 
 		/**
 		 * @brief Set current status.
-		 * 
+		 * @param status Status to set.
 		 */
 		static void
 		setStatus(Status status);
 
 		/**
-		 * @brief Update status animations. Should be called from the timer interrupt setup by `enable()`.
-		 * 
+		 * @brief Update status animations. Should be called from the timer interrupt setup by enable().
 		 */
 		static void
 		update();
