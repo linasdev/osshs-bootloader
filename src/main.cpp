@@ -61,7 +61,7 @@ main()
 			return 0;
 		}
 
-		OSSHS_LOG_ERROR("Application is invalid.");
+		OSSHS_LOG_ERROR("Loading application failed. Application is invalid.");
 
 		StatusIndicator::setStatus(StatusIndicator::Status::APPLICATION_ERROR);
 	}
