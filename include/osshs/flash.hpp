@@ -26,6 +26,7 @@
 #define OSSHS_FLASH_HPP
 
 #include <cstdint>
+#include <memory>
 
 #define OSSHS_FLASH_KEY_RDPRT 0x00A5
 #define OSSHS_FLASH_KEY1 			0x45670123
@@ -83,11 +84,31 @@ namespace osshs
 		/**
 		 * @brief Erase a page.
 		 * @note Required for writing to any address within the page.
-		 * @param address Any address withing the page that should be erased.
+		 * @param address Origin address of any page.
 		 * @return Whether or not erasing succeeded.
 		 */
 		static bool
 		erasePage(uint32_t address);
+
+		/**
+		 * @brief Read a whole page from flash.
+		 * @note The size of the buffer provided must be OSSHS_FLASH_PAGE_SIZE.
+		 * @param address Origin address of any page.
+		 * @param buffer A std::unique_ptr<uint8_t[]> to a buffer that will contain the page read. 
+		 * @return Whether or not reading succeeded.
+		 */
+		static bool
+		readPage(uint32_t address, std::unique_ptr<uint8_t[]> &buffer);
+
+		/**
+		 * @brief Erase and write a whole page to flash.
+		 * @note The size of the buffer provided must be OSSHS_FLASH_PAGE_SIZE.
+		 * @param address Origin address of any page.
+		 * @param buffer A std::unique_ptr<uint8_t[]> to a buffer that contains the page to be written.
+		 * @return Whether or not writing succeeded.
+		 */
+		static bool
+		writePage(uint32_t address, std::unique_ptr<uint8_t[]> &buffer);
 	};
 }
 

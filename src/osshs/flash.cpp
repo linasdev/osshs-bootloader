@@ -116,14 +116,12 @@ namespace osshs
 		bool
 		Flash::erasePage(uint32_t address)
 		{
-			if (address & 0b1)
+			if (address % OSSHS_FLASH_PAGE_SIZE)
 			{
-				OSSHS_LOG_ERROR("Erasing flash page failed. Address not half word aligned(address = `0x%08x`, page = `%d`).",
+				OSSHS_LOG_ERROR("Erasing flash page failed. Address not page aligned(address = `0x%08x`, page = `%d`).",
 					address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
 				return false;
 			}
-
-			uint32_t pageOrigin = (address / OSSHS_FLASH_PAGE_SIZE) * OSSHS_FLASH_PAGE_SIZE;
 
 			// Wait until flash is not busy
 			while(FLASH->SR & FLASH_SR_BSY);
@@ -144,7 +142,7 @@ namespace osshs
 			FLASH->CR &= ~FLASH_CR_PER;
 
 			// Verify that the page was erased
-			for (uint32_t i = pageOrigin; i < pageOrigin + OSSHS_FLASH_PAGE_SIZE; i += 2)
+			for (uint32_t i = address; i < address + OSSHS_FLASH_PAGE_SIZE; i += 2)
 				if (*reinterpret_cast<uint16_t *>(i) != 0xffff)
 				{
 					OSSHS_LOG_ERROR("Erasing flash page failed(address = `0x%08x`, page = `%d`).",
@@ -153,6 +151,84 @@ namespace osshs
 				}
 
 			OSSHS_LOG_DEBUG("Erasing flash page succeeded(address = `0x%08x`, page = `%d`).",
+				address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
+			return true;
+		}
+
+		bool
+		Flash::readPage(uint32_t address, std::unique_ptr<uint8_t[]> &buffer)
+		{
+			if (address % OSSHS_FLASH_PAGE_SIZE)
+			{
+				OSSHS_LOG_ERROR("Reading flash page failed. Address not page aligned(address = `0x%08x`, page = `%d`).",
+					address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
+				return false;
+			}
+
+			// Read a whole page from flash
+			for (uint32_t i = 0; i < OSSHS_FLASH_PAGE_SIZE; i += 2)
+			{
+				// Read a value from flash
+				uint16_t value = *reinterpret_cast<uint16_t *>(address + i);
+
+				// Little endian is the default memory format for ARM processors
+				buffer[i + 0] = value & 0xff;
+				buffer[i + 1] = value >> 8;
+			}
+
+			OSSHS_LOG_DEBUG("Reading flash page succeeded(address = `0x%08x`, page = `%d`).",
+				address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
+			return true;
+		}
+
+		bool
+		Flash::writePage(uint32_t address, std::unique_ptr<uint8_t[]> &buffer)
+		{
+			if (address % OSSHS_FLASH_PAGE_SIZE)
+			{
+				OSSHS_LOG_ERROR("Writing flash page failed. Address not page aligned(address = `0x%08x`, page = `%d`).",
+					address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
+				return false;
+			}
+
+			if (!erasePage(address))
+			{
+				OSSHS_LOG_ERROR("Writing flash page failed. Page was not erased(address = `0x%08x`, page = `%d`).",
+					address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
+				return false;
+			}
+
+			// Enable flash programming
+			FLASH->CR |= FLASH_CR_PG;
+
+			// Wait until flash is not busy
+			while(FLASH->SR & FLASH_SR_BSY);
+
+			// Write a whole page to flash
+			for (uint32_t i = 0; i < OSSHS_FLASH_PAGE_SIZE; i += 2)
+			{
+				// Little endian is the default memory format for ARM processors
+				uint16_t value = buffer[i] | (buffer[i + 1] << 8);
+				
+				// Write to flash
+				*reinterpret_cast<uint16_t *>(address + i) = value;
+
+				// Wait until flash is not busy
+				while(FLASH->SR & FLASH_SR_BSY);
+
+				// Verify written value
+				if (*reinterpret_cast<uint16_t *>(address + i) != value)
+				{
+					OSSHS_LOG_ERROR("Writing flash page failed. Value could not be written(address = `0x%08x`, value = `0x%04x`).",
+						address, buffer[i]);
+					return true;
+				}
+			}
+			
+			// Disable flash programming
+			FLASH->CR &= ~FLASH_CR_PG;
+
+			OSSHS_LOG_DEBUG("Writing flash page succeeded(address = `0x%08x`, page = `%d`).",
 				address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
 			return true;
 		}
