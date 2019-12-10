@@ -42,16 +42,9 @@ main()
 
 	osshs::Bootloader::initialize();
 	
-	StatusIndicator::enable();
-	StatusIndicator::setStatus(StatusIndicator::Status::BOOTLOADER_ACTIVE);
-
 	if(osshs::Bootloader::shouldLoadApplication())
-	{
-		OSSHS_LOG_INFO("Loading application.");
-
 		if(osshs::Bootloader::checkApplication())
 		{
-			StatusIndicator::disable();
 			osshs::Bootloader::deinitialize();
 
 			OSSHS_LOG_FLUSH();
@@ -61,9 +54,16 @@ main()
 			return 0;
 		}
 
-		OSSHS_LOG_ERROR("Loading application failed. Application is invalid.");
+	StatusIndicator::enable();
 
+	if(osshs::Bootloader::shouldLoadApplication())
+	{
+		OSSHS_LOG_ERROR("Loading application failed. Application is invalid.");
 		StatusIndicator::setStatus(StatusIndicator::Status::APPLICATION_ERROR);
+	}
+	else
+	{
+		StatusIndicator::setStatus(StatusIndicator::Status::BOOTLOADER_ACTIVE);
 	}
 
 	while(true);
