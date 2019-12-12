@@ -31,10 +31,10 @@ namespace osshs
 	void
 	Bootloader::initialize()
 	{
-		OSSHS_LOG_INFO("Initializing bootloader.");
-
 		// Enable the power and backup interface clocks.
 		RCC->APB1ENR |= RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN;
+
+		OSSHS_LOG_INFO("Initializing bootloader succeeded.");
 	}
 
 	bool
@@ -46,7 +46,6 @@ namespace osshs
 	void
 	Bootloader::setLoadApplication(bool loadApplication)
 	{
-		OSSHS_LOG_INFO("Setting loadApplication(loadApplication = %d).", loadApplication);
 
 		PWR->CR |= PWR_CR_DBP;
 
@@ -60,6 +59,8 @@ namespace osshs
 		}
 
 		PWR->CR &= ~PWR_CR_DBP;
+
+		OSSHS_LOG_INFO("Setting loadApplication succeeded(loadApplication = %d).", loadApplication);
 	}
 
 	bool
@@ -85,9 +86,9 @@ namespace osshs
 	void
 	Bootloader::deinitialize()
 	{
-		OSSHS_LOG_INFO("Deinitializing bootloader.");
-
 		// Disable the power and backup interface clocks.
 		RCC->APB1ENR &= ~(RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN);
+
+		OSSHS_LOG_INFO("Deinitializing bootloader succeeded.");
 	}
 }
