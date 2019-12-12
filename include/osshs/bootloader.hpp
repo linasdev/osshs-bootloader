@@ -43,6 +43,12 @@ namespace osshs
 		initialize();
 
 		/**
+		 * @brief Deinitialize the bootloader.
+		 */
+		static void
+		deinitialize();
+		
+		/**
 		 * @brief Check whether or not the bootloader should load the application.
 		 * @return Whether or not the bootloader should load the application.
 		 */
@@ -69,12 +75,6 @@ namespace osshs
 		 */
 		static void
 		loadApplication();
-
-		/**
-		 * @brief Deinitialize the bootloader.
-		 */
-		static void
-		deinitialize();
 	};
 }
 
