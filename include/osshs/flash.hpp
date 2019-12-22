@@ -109,6 +109,15 @@ namespace osshs
 		 */
 		static bool
 		writePage(uint32_t address, std::unique_ptr<uint8_t[]> &buffer);
+
+	private:
+		/**
+		 * @brief Reverse the order of bits of a word.
+		 * @param value Original value.
+		 * @return Reflected value.
+		 */
+		static uint32_t
+		reflectWord(uint32_t value);
 	};
 }
 

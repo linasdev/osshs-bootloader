@@ -232,4 +232,15 @@ namespace osshs
 				address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
 			return true;
 		}
+
+		uint32_t
+		Flash::reflectWord(uint32_t value)
+		{
+			value = ((value >>  1) & 0x55555555) | ((value <<  1) & 0xaaaaaaaa);
+			value = ((value >>  2) & 0x33333333) | ((value <<  2) & 0xcccccccc);
+			value = ((value >>  4) & 0x0f0f0f0f) | ((value <<  4) & 0xf0f0f0f0);
+			value = ((value >>  8) & 0x00ff00ff) | ((value <<  8) & 0xff00ff00);
+			value = ((value >> 16) & 0x0000ffff) | ((value << 16) & 0xffff0000);
+			return value;
+		}
 }
