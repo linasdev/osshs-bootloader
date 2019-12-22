@@ -28,18 +28,37 @@
 #include <cstdint>
 #include <memory>
 
-#define OSSHS_FLASH_KEY_RDPRT 0x00A5
+#define OSSHS_FLASH_KEY_RDPRT 0x00a5
 #define OSSHS_FLASH_KEY1 			0x45670123
-#define OSSHS_FLASH_KEY2 			0xCDEF89AB
+#define OSSHS_FLASH_KEY2 			0xcdef89ab
 
 #define OSSHS_FLASH_ORIGIN    0x08000000
 #define OSSHS_FLASH_PAGE_SIZE 0x0400
+
+#define OSSHS_FLASH_CRC_REFLECT_INPUT  true
+#define OSSHS_FLASH_CRC_REFLECT_RESULT true
+#define OSSHS_FLASH_CRC_FINAL_XOR      0xffffffff
 
 namespace osshs
 {
 	class Flash
 	{
 	public:
+		/**
+		 * @brief Initialize the flash.
+		 * @note This methods also tries to unlock the flash.
+		 * @return Whether or not flash initialization succeeded. 
+		 */
+		static bool
+		initialize();
+
+		/**
+		 * @brief Deinitialize the flash.
+		 * @note This methods also locks the flash.
+		 */
+		static void
+		deinitialize();
+
 		/**
 		 * @brief Check if flash is locked.
 		 * @note Writing to flash is only possible if it is unlocked.
@@ -109,6 +128,15 @@ namespace osshs
 		 */
 		static bool
 		writePage(uint32_t address, std::unique_ptr<uint8_t[]> &buffer);
+
+		/**
+		 * @brief Calculate CRC of a page.
+		 * @param address Origin address of any page.
+		 * @param crc A std::unique_ptr<uint32_t> to a value that will contain the calculated CRC.
+		 * @return Whether or not calculating CRC succeeded.
+		 */
+		static bool
+		calculatePageCRC(uint32_t address, std::unique_ptr<uint32_t> &crc);
 
 	private:
 		/**

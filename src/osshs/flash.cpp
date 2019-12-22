@@ -29,6 +29,32 @@
 namespace osshs
 {
 		bool
+		Flash::initialize()
+		{
+			// Enable CRC peripheral clock
+			RCC->AHBENR |= RCC_AHBENR_CRCEN;
+
+			// Unlock flash if locked
+			if (isLocked() && !unlock())
+			{
+				OSSHS_LOG_ERROR("Initializing flash failed. Could not unlock flash.");
+				return false;
+			}
+
+			OSSHS_LOG_INFO("Initializing flash succeeded.");
+			return true;
+		}
+
+		void
+		Flash::deinitialize()
+		{
+			// Disable CRC peripheral clock
+			RCC->AHBENR &= !RCC_AHBENR_CRCEN;
+
+			OSSHS_LOG_INFO("Deinitializing flash succeeded.");
+		}
+
+		bool
 		Flash::isLocked()
 		{
 			return FLASH->CR & FLASH_CR_LOCK;
@@ -233,6 +259,70 @@ namespace osshs
 			return true;
 		}
 
+		bool
+		Flash::calculatePageCRC(uint32_t address, std::unique_ptr<uint32_t> &crc)
+		{
+			if (address % OSSHS_FLASH_PAGE_SIZE)
+			{
+				OSSHS_LOG_ERROR("Calculating flash page CRC failed. Address not page aligned(address = `0x%08x`, page = `%d`).",
+					address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE);
+				return false;
+			}
+
+			// Reset CRC peripheral
+			CRC->CR |= CRC_CR_RESET;
+
+			// Calculate CRC of a flash page
+			uint32_t i;
+			for (i = 0; i < OSSHS_FLASH_PAGE_SIZE; i += 4)
+			{
+#if OSSHS_FLASH_CRC_REFLECT_INPUT
+				// Read a full word from flash
+				uint16_t majorHalfWord = *reinterpret_cast<uint16_t *>(address + i + 0);
+				uint16_t minorHalfWord = *reinterpret_cast<uint16_t *>(address + i + 2);
+
+				// Little endian is the default memory format for ARM processors
+				uint32_t value = reflectWord(majorHalfWord | (minorHalfWord << 16));
+#else
+				// Read a full word from flash
+				uint16_t majorHalfWord = *reinterpret_cast<uint16_t *>(address + i + 0);
+				uint16_t minorHalfWord = *reinterpret_cast<uint16_t *>(address + i + 2);
+
+				// Swap order of bytes in both half words
+				majorHalfWord = ((majorHalfWord & 0x00ff) << 8) |
+												((majorHalfWord & 0xff00) >> 8);
+
+				minorHalfWord = ((minorHalfWord & 0x00ff) << 8) |
+												((minorHalfWord & 0xff00) >> 8);
+
+				// Little endian is the default memory format for ARM processors
+				uint32_t value = minorHalfWord | (majorHalfWord << 16);
+#endif
+
+				// Calculate CRC of the full word
+				CRC->DR = value;
+			}
+
+			// Retrieve calculated CRC from peripheral
+#if OSSHS_FLASH_CRC_REFLECT_RESULT
+			*crc = reflectWord(CRC->DR);
+#else
+			*crc = CRC->DR;
+#endif
+
+			// Apply final XOR value to CRC
+#if OSSHS_FLASH_CRC_FINAL_XOR != 0
+			(*crc) ^= OSSHS_FLASH_CRC_FINAL_XOR;
+#endif
+
+			// Reset CRC peripheral
+			CRC->CR |= CRC_CR_RESET;
+
+			OSSHS_LOG_DEBUG("Calculating flash page CRC succeeded(address = `0x%08x`, page = `%d`, crc = `0x%08x`).",
+				address, (address - OSSHS_FLASH_ORIGIN) / OSSHS_FLASH_PAGE_SIZE, *crc);
+			return true;
+		}
+		
 		uint32_t
 		Flash::reflectWord(uint32_t value)
 		{
