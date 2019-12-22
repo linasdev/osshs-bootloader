@@ -25,40 +25,54 @@
 #include <board.hpp>
 #include <osshs/bootloader.hpp>
 #include <osshs/status_led_controller.hpp>
+#include <osshs/log/logger.hpp>
 #include <modm/architecture/interface/interrupt.hpp>
 
+using namespace modm::literals;
 using StatusIndicator = osshs::StatusLedController<modm::platform::Timer2, osshs::board::StatusLed, osshs::board::SystemClock>;
 
-MODM_ISR(TIM2)
-{
-	modm::platform::Timer2::acknowledgeInterruptFlags(modm::platform::GeneralPurposeTimer::InterruptFlag::Update);
-	StatusIndicator::update();
-}
+OSSHS_ENABLE_LOGGER(modm::platform::Usart1, modm::IOBuffer::BlockIfFull);
 
 int
 main()
 {
-	osshs::Bootloader::initialize();
+	osshs::board::initialize();
 
+	OSSHS_LOG_SET_LEVEL(osshs::log::Level::DEBUG);
+
+	osshs::Bootloader::initialize();
+	
 	if(osshs::Bootloader::shouldLoadApplication())
-	{
 		if(osshs::Bootloader::checkApplication())
 		{
 			osshs::Bootloader::deinitialize();
+
+			OSSHS_LOG_FLUSH();
+
+			osshs::board::deinitialize();
 			osshs::Bootloader::loadApplication();
 			return 0;
 		}
 
-		osshs::board::initialize();
-		StatusIndicator::initialize(StatusIndicator::Status::APPLICATION_ERROR);
+	StatusIndicator::enable();
+
+	if(osshs::Bootloader::shouldLoadApplication())
+	{
+		OSSHS_LOG_ERROR("Loading application failed. Application is invalid.");
+		StatusIndicator::setStatus(StatusIndicator::Status::APPLICATION_ERROR);
 	}
 	else
 	{
-		osshs::board::initialize();
-		StatusIndicator::initialize();
+		StatusIndicator::setStatus(StatusIndicator::Status::BOOTLOADER_ACTIVE);
 	}
 
 	while(true);
 
 	return 0;
+}
+
+MODM_ISR(TIM2)
+{
+	modm::platform::Timer2::acknowledgeInterruptFlags(modm::platform::GeneralPurposeTimer::InterruptFlag::Update);
+	StatusIndicator::update();
 }

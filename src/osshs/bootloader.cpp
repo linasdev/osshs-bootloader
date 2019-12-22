@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <osshs/log/logger.hpp>
 #include <osshs/bootloader.hpp>
 #include <modm/platform.hpp>
 
@@ -32,6 +33,8 @@ namespace osshs
 	{
 		// Enable the power and backup interface clocks.
 		RCC->APB1ENR |= RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN;
+
+		OSSHS_LOG_INFO("Initializing bootloader succeeded.");
 	}
 
 	bool
@@ -43,6 +46,7 @@ namespace osshs
 	void
 	Bootloader::setLoadApplication(bool loadApplication)
 	{
+
 		PWR->CR |= PWR_CR_DBP;
 
 		if (loadApplication)
@@ -55,6 +59,8 @@ namespace osshs
 		}
 
 		PWR->CR &= ~PWR_CR_DBP;
+
+		OSSHS_LOG_INFO("Setting loadApplication succeeded(loadApplication = %d).", loadApplication);
 	}
 
 	bool
@@ -82,5 +88,7 @@ namespace osshs
 	{
 		// Disable the power and backup interface clocks.
 		RCC->APB1ENR &= ~(RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN);
+
+		OSSHS_LOG_INFO("Deinitializing bootloader succeeded.");
 	}
 }

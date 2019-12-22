@@ -1,3 +1,6 @@
 [submodule "modm"]
 	path = ext/modm
 	url = https://github.com/linasnikis/modm
+[submodule "ext/magic_enum"]
+	path = ext/magic_enum
+	url = https://github.com/Neargye/magic_enum

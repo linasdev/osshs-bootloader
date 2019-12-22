@@ -38,47 +38,43 @@ namespace osshs
 	public:
 		/**
 		 * @brief Initialize the bootloader.
-		 *
 		 */
 		static void
 		initialize();
 
 		/**
+		 * @brief Deinitialize the bootloader.
+		 */
+		static void
+		deinitialize();
+		
+		/**
 		 * @brief Check whether or not the bootloader should load the application.
-		 *
-		 * @return bool Whether or not the bootloader should load the application.
+		 * @return Whether or not the bootloader should load the application.
 		 */
 		static bool
 		shouldLoadApplication();
 
 		/**
 		 * @brief Set whether or not the bootloader should load the application on next boot.
-		 * 
-		 * @param loadApplication value to set.
+		 * @param loadApplication Value to set.
 		 */
 		static void
 		setLoadApplication(bool loadApplication = true);
 
 		/**
 		 * @brief Check if the application has a valid stack pointer.
-		 *
+		 * @return Whether or not the applicaion has a valid stack pointer.
 		 */
 		static bool
 		checkApplication();
 
 		/**
 		 * @brief Load the application.
-		 *
+		 * @note deinitialize() should be called before loading the application.
 		 */
 		static void
 		loadApplication();
-
-		/**
-		 * @brief Deinitialize the bootloader.
-		 *
-		 */
-		static void
-		deinitialize();
 	};
 }
 

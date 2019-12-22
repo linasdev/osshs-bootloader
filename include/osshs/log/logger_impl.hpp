@@ -22,55 +22,34 @@
  * SOFTWARE.
  */
 
-#ifndef OSSHS_STATUS_LED_CONTROLLER_HPP
-#define OSSHS_STATUS_LED_CONTROLLER_HPP
+#ifndef OSSHS_LOGGER_HPP
+	#error "Don't include this file directly, use 'logger.hpp' instead!"
+#endif
 
 #include <modm/platform.hpp>
+#include <magic_enum.hpp>
 
 namespace osshs
 {
-	template<typename TIMER, typename STATUS_LED, typename SYSTEM_CLOCK>
-	class StatusLedController
+	namespace log
 	{
-	public:
-		enum class Status : uint32_t
+		template<typename... ARGS>
+		void
+		Logger::log(Level level, const char *filename, uint32_t line, const char *format, ARGS... args)
 		{
-			BOOTLOADER_ACTIVE,
-			APPLICATION_ERROR,
-			BOOTLOADER_ERROR
-		};
+			if (level > Logger::level)
+				return;
 
-		/**
-		 * @brief Enable the status led timer.
-		 */
-		static void
-		enable();
+			logger.printf(
+				"[%.3f][%s][%s:%lu] ",
+				static_cast<double>(modm::Clock::now().getTime() / 1000.0),
+				std::string(magic_enum::enum_name(level)).c_str(),
+				filename,
+				line
+			);
 
-		/**
-		 * @brief Disable the status led timer.
-		 */
-		static void
-		disable();
-
-		/**
-		 * @brief Set current status.
-		 * @param status Status to set.
-		 */
-		static void
-		setStatus(Status status);
-
-		/**
-		 * @brief Update status animations.
-		 * @note Should be called from the timer interrupt setup by enable().
-		 */
-		static void
-		update();
-	private:
-		static Status status;
-		static uint16_t counter;
-  };
+			logger.printf(format, args...);
+			logger.printf("\r\n");
+		}
+	}
 }
-
-#include <osshs/status_led_controller_impl.hpp>
-
-#endif  // OSSHS_STATUS_LED_CONTROLLER_HPP

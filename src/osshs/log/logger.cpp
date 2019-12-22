@@ -22,55 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef OSSHS_STATUS_LED_CONTROLLER_HPP
-#define OSSHS_STATUS_LED_CONTROLLER_HPP
+#include <osshs/log/logger.hpp>
 
-#include <modm/platform.hpp>
-
-namespace osshs
-{
-	template<typename TIMER, typename STATUS_LED, typename SYSTEM_CLOCK>
-	class StatusLedController
+#ifndef DISABLE_LOGGING
+	namespace osshs
 	{
-	public:
-		enum class Status : uint32_t
+		namespace log
 		{
-			BOOTLOADER_ACTIVE,
-			APPLICATION_ERROR,
-			BOOTLOADER_ERROR
-		};
+			Level Logger::level = Level::DEBUG;
 
-		/**
-		 * @brief Enable the status led timer.
-		 */
-		static void
-		enable();
-
-		/**
-		 * @brief Disable the status led timer.
-		 */
-		static void
-		disable();
-
-		/**
-		 * @brief Set current status.
-		 * @param status Status to set.
-		 */
-		static void
-		setStatus(Status status);
-
-		/**
-		 * @brief Update status animations.
-		 * @note Should be called from the timer interrupt setup by enable().
-		 */
-		static void
-		update();
-	private:
-		static Status status;
-		static uint16_t counter;
-  };
-}
-
-#include <osshs/status_led_controller_impl.hpp>
-
-#endif  // OSSHS_STATUS_LED_CONTROLLER_HPP
+			void
+			Logger::setLevel(Level level)
+			{
+				Logger::level = level;
+			}
+			
+			void
+			Logger::flush()
+			{
+				logger.flush();
+			}
+		}
+	}
+#endif  // DISABLE_LOGGING
