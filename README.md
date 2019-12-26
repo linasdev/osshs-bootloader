@@ -1,4 +1,4 @@
-# Open-source Smart House System
+# Bootloader for the Open-source Smart House System
 TODO: Add project description.
 
 ## Getting Started
