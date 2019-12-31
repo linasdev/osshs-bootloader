@@ -12,47 +12,49 @@
 import os
 from os.path import join, abspath
 
-project_name = "osshs-bootloader"
+project_name = 'osshs-bootloader'
 
-build_path = "./build/" + project_name
-profile = ARGUMENTS.get("profile", "debug")
+build_path = './build/' + project_name
+profile = ARGUMENTS.get('profile', 'debug')
 
 generated_paths = [
     'modm'
 ]
 
-CacheDir("./build/cache")
+CacheDir('./build/cache')
 
 env = DefaultEnvironment(tools=[], ENV=os.environ)
 
-env["CONFIG_BUILD_BASE"] = abspath(build_path)
-env["CONFIG_PROJECT_NAME"] = project_name
-env["CONFIG_PROFILE"] = profile
+env['CONFIG_BUILD_BASE'] = abspath(build_path)
+env['CONFIG_PROJECT_NAME'] = project_name
+env['CONFIG_PROFILE'] = profile
 
-env.SConscript(dirs=generated_paths, exports="env")
+env.SConscript(dirs=generated_paths, exports='env')
 
-env.Append(CPPPATH="./include")
-ignored = ["cmake-*", ".lbuild_cache", build_path] + generated_paths
+ignored = ['cmake-*', '.lbuild_cache', build_path] + generated_paths
 sources = []
 
 sources += env.FindSourceFiles('./src', ignorePaths=ignored)
+sources += env.FindSourceFiles('./ext/osshs-protocol/src', ignorePaths=ignored)
 
 env.Append(CPPPATH = [
-    "./ext/magic_enum/include/"
+    './include',
+    './ext/magic_enum/include',
+    './ext/osshs-protocol/include'
 ])
 
 env.Append(CCFLAGS = [
-    "-fno-exceptions"
+    '-fno-exceptions'
 ])
 
-if profile == "debug":
+if profile == 'debug':
     env.Append(CCFLAGS = [
-        "-O0"
+        '-O0'
     ])
 
-if profile == "release":
+if profile == 'release':
     env.Append(CCFLAGS = [
-        "-DDISABLE_LOGGING"
+        '-DDISABLE_LOGGING'
     ])
 
 env.BuildTarget(sources)
